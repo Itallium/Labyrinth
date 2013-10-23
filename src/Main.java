@@ -106,6 +106,7 @@ public class Main {
                 }
             }
         }
+
         outputImage = new BufferedImage((image.getWidth() / 3) + 1, (image.getHeight() / 3) + 1, 1);
         for (int i = 0; i < labyrinth.length; i++) {
             for (int j = 0; j < labyrinth.length; j++) {
