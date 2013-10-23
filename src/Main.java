@@ -36,13 +36,43 @@ public class Main {
 
         //В новый массив скидываем только каждый третий эдемент искомого (специфика входной картинки).
         int[][] labyrinth = new int[(image.getHeight() / 3) + 1][(image.getWidth() / 3) + 1];
+        int[][] path = new int[(image.getHeight() / 3) + 1][(image.getWidth() / 3) + 1];
         for (int i = 0; i < (image.getHeight() / 3) + 1; i++) {
             for (int j = 0; j < (image.getWidth() / 3) + 1; j++) {
              labyrinth[i][j] = sourceImage[i * 3][j * 3];
+             path[i][j] = sourceImage[i * 3][j * 3];
             }
         }
+        int endCount;
+        int edgeCount;;
+        do {
+            endCount = 0;
+            for (int i = 1; i < path.length - 1; i++) {
+                for (int j = 1; j < path.length - 1; j++) {
+                    if (path[i][j] == 0) {
+                        edgeCount = 0;
+                        if (path[i - 1][j] == 1) {
+                            edgeCount++;
+                        }
+                        if (path[i + 1][j] == 1) {
+                            edgeCount++;
+                        }
+                        if (path[i][j - 1] == 1) {
+                            edgeCount++;
+                        }
+                        if (path[i][j + 1] == 1) {
+                            edgeCount++;
+                        }
+                        if (edgeCount == 3) {
+                            path[i][j] = 1;
+                            endCount++;
+                        }
+                    }
+                }
+            }
+        } while (endCount != 0);
 
-        //Сохраняем готовую картинку в файл.
+        //Save complete labyrinth to file.
         BufferedImage outputImage = new BufferedImage((image.getWidth() / 3) + 1, (image.getHeight() / 3) + 1, 12);
         for (int i = 0; i < labyrinth.length; i++) {
             for (int j = 0; j < labyrinth.length; j++) {
@@ -53,6 +83,43 @@ public class Main {
                 }
             }
         }
-        ImageIO.write(outputImage, "bmp", new File("result\\saved.bmp"));
+        ImageIO.write(outputImage, "bmp", new File("result\\labyrinth.bmp"));
+
+        //Save path to file.
+        outputImage = new BufferedImage((image.getWidth() / 3) + 1, (image.getHeight() / 3) + 1, 12);
+        for (int i = 0; i < path.length; i++) {
+            for (int j = 0; j < path.length; j++) {
+                if (path[i][j] == 1) {
+                    outputImage.setRGB(j, i, BLACK);
+                } else {
+                    outputImage.setRGB(j, i, WHITE);
+                }
+            }
+        }
+        ImageIO.write(outputImage, "bmp", new File("result\\path.bmp"));
+
+        //Compare path and labyrinth
+        for (int i = 0; i < labyrinth.length; i++) {
+            for (int j = 0; j < labyrinth.length; j++) {
+                if (path[i][j] == 0) {
+                    labyrinth[i][j] = 2;
+                }
+            }
+        }
+        outputImage = new BufferedImage((image.getWidth() / 3) + 1, (image.getHeight() / 3) + 1, 1);
+        for (int i = 0; i < labyrinth.length; i++) {
+            for (int j = 0; j < labyrinth.length; j++) {
+                if (labyrinth[i][j] == 0) {
+                    outputImage.setRGB(j, i, WHITE);
+                }
+                if (labyrinth[i][j] == 1) {
+                    outputImage.setRGB(j, i, BLACK);
+                }
+                if (labyrinth[i][j] == 2) {
+                    outputImage.setRGB(j, i, GREEN);
+                }
+            }
+        }
+        ImageIO.write(outputImage, "bmp", new File("result\\complete.bmp"));
     }
 }
